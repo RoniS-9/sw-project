@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# C / C extension build output
+build/
+dist/
+*.o
+*.so
+*.dylib
+*.a
+*.out
+a.out
+cmake-build-*/
+
+# IDEs
+.idea/
+.vscode/
+
+# macOS
+.DS_Store
