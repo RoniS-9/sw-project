@@ -23,3 +23,7 @@ cmake-build-*/
 
 # macOS
 .DS_Store
+
+# JetBrains AI assistant data
+.ai/
+.clion.source.upload.marker
