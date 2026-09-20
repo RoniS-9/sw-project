@@ -1,5 +1,5 @@
 """Build the symnmfmodule C extension: python3 setup.py build_ext --inplace"""
-from setuptools import setup, Extension
+from setuptools import Extension, setup
 
 module = Extension("symnmfmodule", sources=["symnmfmodule.c", "symnmf.c"])
 

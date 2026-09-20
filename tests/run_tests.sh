@@ -14,10 +14,20 @@ bad() { FAIL=$((FAIL + 1)); echo "  FAIL $1"; }
 
 echo "== build"
 make clean >/dev/null
-if make 2>&1 | grep -iq warning; then bad "make warnings"; else ok "make (no warnings)"; fi
+if make 2>&1 | grep -q 'warning:'; then bad "make warnings"; else ok "make (no warnings)"; fi
 [ -x symnmf ] && ok "symnmf built" || bad "symnmf not built"
-if python3 setup.py build_ext --inplace 2>&1 | grep -iqE 'warning|error'; then
-    bad "setup.py warnings/errors"
+# Remove the build cache so the extension is really recompiled: otherwise
+# setuptools prints nothing and the check below passes without testing anything.
+rm -rf build ./*.so
+python3 setup.py build_ext --inplace > "$OUT/build" 2>&1
+if [ $? -ne 0 ]; then
+    bad "setup.py build failed"; tail -5 "$OUT/build"
+elif ! grep -q -- '-c symnmfmodule.c' "$OUT/build"; then
+    bad "setup.py did not recompile (check would be vacuous)"
+elif grep -qE '(warning|error):' "$OUT/build"; then
+    # gcc writes real diagnostics as "warning:" / "error:"; the compiler flags
+    # themselves (e.g. -Werror=format-security) must not match.
+    bad "setup.py warnings/errors"; grep -E '(warning|error):' "$OUT/build"
 else
     ok "setup.py build_ext (no warnings)"
 fi
