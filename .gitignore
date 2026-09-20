@@ -16,6 +16,7 @@ dist/
 *.out
 a.out
 cmake-build-*/
+/symnmf
 
 # IDEs
 .idea/
