@@ -11,6 +11,8 @@ from sklearn.metrics import silhouette_score, adjusted_rand_score
 
 import symnmf
 
+np.random.seed(1234)
+
 EPSILON = 1e-4
 MAX_ITER = 300
 
@@ -99,7 +101,6 @@ def parse_args(argv):
 
 def main():
     """Entry point: cluster with both methods and print the scores."""
-    np.random.seed(1234)
     k, X = parse_args(sys.argv)
     try:
         nmf_labels = symnmf_labels(X, k)
