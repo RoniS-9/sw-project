@@ -48,7 +48,10 @@ def update_centroids(points, labels, centroids):
     d = len(points[0])
     new_centroids = []
     for i in range(len(centroids)):
-        cluster_points = [p for p, lab in zip(points, labels) if lab == i]
+        cluster_points = []
+        for index in range(len(points)):
+            if labels[index] == i:
+                cluster_points.append(points[index])
         if len(cluster_points) == 0:
             new_centroids.append(list(centroids[i]))
             continue
@@ -64,7 +67,12 @@ def update_centroids(points, labels, centroids):
 
 def max_shift(old, new):
     """Largest Euclidean distance between matching old and new centroids."""
-    return max(euclidean_distance(o, n) for o, n in zip(old, new))
+    max_delta = 0.0
+    for i in range(len(old)):
+        delta = euclidean_distance(old[i], new[i])
+        if delta > max_delta:
+            max_delta = delta
+    return max_delta
 
 
 def kmeans(points, k):
