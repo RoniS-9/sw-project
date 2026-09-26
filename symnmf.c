@@ -1,9 +1,8 @@
 /*
  * symnmf.c - SymNMF matrix computations and a standalone command line program.
  *
- * Usage: ./symnmf goal file_name.txt
- *   goal is one of: sym, ddg, norm. The resulting n x n matrix is printed
- *   with 4 decimal places, comma separated, one row per line.
+ * goal is one of: sym, ddg, norm. The resulting n x n matrix is printed
+ * with 4 decimal places, comma separated, one row per line.
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,7 +27,7 @@ double **alloc_matrix(int rows, int cols)
     double **m;
     int i;
 
-    data = calloc((size_t)rows * (size_t)cols, sizeof(double));
+    data = calloc((size_t)rows * (size_t)cols, sizeof(double)); /* contiguous data block */
     if (data == NULL) {
         return NULL;
     }
@@ -49,7 +48,7 @@ void free_matrix(double **m)
     if (m == NULL) {
         return;
     }
-    free(m[0]);
+    free(m[0]); /* free the contiguous data block m[0] is pointing to */
     free(m);
 }
 
@@ -95,6 +94,7 @@ double **sym(double **X, int n, int d)
     if (A == NULL) {
         return NULL;
     }
+    /* diagonal elements are zero by using calloc in alloc_matrix */
     for (i = 0; i < n; i++) {
         for (j = i + 1; j < n; j++) {
             A[i][j] = exp(-squared_distance(X[i], X[j], d) / 2.0);
@@ -140,6 +140,7 @@ static double **ddg_from_sym(double **A, int n)
         D[i][i] = deg[i];
     }
     free(deg);
+
     return D;
 }
 
@@ -201,7 +202,7 @@ double **norm(double **X, int n, int d)
 /* symnmf                                                                 */
 /* ---------------------------------------------------------------------- */
 
-/* C (n x p) = A (n x m) * B (m x p). C must not alias A or B. */
+/* C (n x p) = A (n x m) * B (m x p). C must be a different matrix from A and B. */
 static void mat_mul(double **A, double **B, double **C, int n, int m, int p)
 {
     int i, j, t;
@@ -211,7 +212,7 @@ static void mat_mul(double **A, double **B, double **C, int n, int m, int p)
         for (j = 0; j < p; j++) {
             C[i][j] = 0.0;
         }
-        for (t = 0; t < m; t++) {
+        for (t = 0; t < m; t++) { /* less cache misses iterating over rows */
             a = A[i][t];
             for (j = 0; j < p; j++) {
                 C[i][j] += a * B[t][j];
@@ -221,7 +222,7 @@ static void mat_mul(double **A, double **B, double **C, int n, int m, int p)
 }
 
 /* G (k x k) = H^T H, for H of size n x k. */
-static void gram(double **H, double **G, int n, int k)
+static void h_trans_h(double **H, double **G, int n, int k)
 {
     int i, a, b;
 
@@ -252,7 +253,7 @@ static void update_step(double **H, double **W, double **next,
     int i, j;
 
     mat_mul(W, H, WH, n, n, k);
-    gram(H, HtH, n, k);
+    h_trans_h(H, HtH, n, k);
     mat_mul(H, HtH, HHtH, n, k, k);
     for (i = 0; i < n; i++) {
         for (j = 0; j < k; j++) {
