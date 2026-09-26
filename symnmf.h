@@ -2,7 +2,7 @@
 #define SYMNMF_H
 
 /*
- * symnmf.h - shared interface of the SymNMF C implementation.
+ * shared interface of the SymNMF C implementation.
  *
  * A matrix is represented as double** : an array of row pointers that all
  * point into one contiguous data block (see alloc_matrix / free_matrix).
@@ -11,7 +11,7 @@
 #define MAX_ITER 300      /* maximum number of H update iterations */
 #define EPSILON 1e-4      /* convergence threshold on ||H(t+1)-H(t)||_F^2 */
 #define BETA 0.5          /* update step parameter */
-#define DENOM_EPS 1e-6    /* added to the update denominator (avoids /0) */
+#define DENOM_EPS 1e-6    /* avoids /0 (forum question) */
 
 /* Allocates a zero-initialized rows x cols matrix. Returns NULL on failure. */
 double **alloc_matrix(int rows, int cols);

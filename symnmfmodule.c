@@ -115,21 +115,21 @@ static PyObject *run_goal(PyObject *args, goal_func func)
 /* Python: sym(X) -> similarity matrix A. */
 static PyObject *py_sym(PyObject *self, PyObject *args)
 {
-    (void)self;
+    (void)self; /* self is unused; cast to void to silence the warning */
     return run_goal(args, sym);
 }
 
 /* Python: ddg(X) -> diagonal degree matrix D. */
 static PyObject *py_ddg(PyObject *self, PyObject *args)
 {
-    (void)self;
+    (void)self; /* self is unused; cast to void to silence the warning */
     return run_goal(args, ddg);
 }
 
 /* Python: norm(X) -> normalized similarity matrix W. */
 static PyObject *py_norm(PyObject *self, PyObject *args)
 {
-    (void)self;
+    (void)self; /* self is unused; cast to void to silence the warning */
     return run_goal(args, norm);
 }
 
@@ -143,7 +143,7 @@ static PyObject *py_symnmf(PyObject *self, PyObject *args)
     double **H0, **W = NULL, **H;
     int n, k, wr, wc;
 
-    (void)self;
+    (void)self; /* self is unused; cast to void to silence the warning */
     if (!PyArg_ParseTuple(args, "OO", &h_obj, &w_obj)) {
         return NULL;
     }

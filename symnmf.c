@@ -244,7 +244,8 @@ static void h_trans_h(double **H, double **G, int n, int k)
  * One SymNMF update: next_ij = H_ij * (1 - BETA + BETA * (WH)_ij / (HH^TH)_ij).
  * H H^T H is computed as H * (H^T H) (O(n k^2)) instead of (H H^T) H (O(n^2 k)).
  * DENOM_EPS is always added to the denominator to avoid division by zero.
- * ws[0] (n x k), ws[1] (k x k) and ws[2] (n x k) are scratch matrices.
+ * ws holds three temporary matrices that symnmf allocates once and this
+ * function reuses on every iteration.
  */
 static void update_step(double **H, double **W, double **next,
                         double **ws[3], int n, int k)
@@ -292,9 +293,9 @@ double **symnmf(double **H0, double **W, int n, int k)
 
     H = copy_matrix(H0, n, k);
     next = alloc_matrix(n, k);
-    ws[0] = alloc_matrix(n, k);
-    ws[1] = alloc_matrix(k, k);
-    ws[2] = alloc_matrix(n, k);
+    ws[0] = alloc_matrix(n, k); /* WH */
+    ws[1] = alloc_matrix(k, k); /* H^T H */
+    ws[2] = alloc_matrix(n, k); /* H H^T H */
     if (H != NULL && next != NULL && ws[0] != NULL && ws[1] != NULL
         && ws[2] != NULL) {
         for (iter = 0; iter < MAX_ITER; iter++) {
@@ -311,10 +312,12 @@ double **symnmf(double **H0, double **W, int n, int k)
         free_matrix(H);
         H = NULL;
     }
+
     free_matrix(next);
     free_matrix(ws[0]);
     free_matrix(ws[1]);
     free_matrix(ws[2]);
+
     return H;
 }
 
@@ -413,7 +416,11 @@ static double **compute_goal(const char *goal, double **X, int n, int d)
     return NULL;
 }
 
-/* Returns 1 if goal is one of the goals supported by the C program. */
+/*
+ * Returns 1 if goal is one of the goals supported by the C program.
+ * Lets main fail immediately, before opening the file, when the goal is
+ * not one of the supported goals.
+ */
 static int is_valid_goal(const char *goal)
 {
     return strcmp(goal, "sym") == 0 || strcmp(goal, "ddg") == 0
@@ -421,9 +428,8 @@ static int is_valid_goal(const char *goal)
 }
 
 /*
- * Entry point: ./symnmf goal file_name.txt
- * Prints the requested matrix and returns 0; on any error prints
- * "An Error Has Occurred" and returns 1.
+ * Prints the requested matrix and returns 0;
+ * on any error prints: "An Error Has Occurred" and returns 1.
  */
 int main(int argc, char *argv[])
 {
