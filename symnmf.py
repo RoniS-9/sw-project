@@ -11,8 +11,6 @@ import numpy as np
 
 import symnmfmodule
 
-np.random.seed(1234)
-
 GOALS = ("symnmf", "sym", "ddg", "norm")
 ERROR_MSG = "An Error Has Occurred"
 K_ERROR_MSG = "Incorrect number of clusters!"
@@ -75,7 +73,9 @@ def init_h(W, k):
 
 def run_symnmf(X, k):
     """Full SymNMF: W = norm(X) (in C), random H init (in Python), then the
-    C optimization. Returns the final H as a list of float lists."""
+    C optimization. Returns the final H as a list of float lists.
+    The seed is set here, at the beginning of the symnmf algorithm."""
+    np.random.seed(1234)
     W = symnmfmodule.norm(X) # build W from the points X
     H0 = init_h(W, k) # draw the random initial H and needs W for the mean
     return symnmfmodule.symnmf(H0.tolist(), W) # C optimization, returns final H

@@ -25,7 +25,7 @@ def norm(X):
     return A * inv[:, None] * inv[None, :]
 
 
-def symnmf(X, k, beta=0.5, eps=1e-4, max_iter=300, denom_eps=1e-6):
+def symnmf(X, k, beta=0.5, eps=1e-4, max_iter=300, denom_eps=1e-12):
     W = norm(X)
     H = np.random.uniform(0, 2 * np.sqrt(W.mean() / k), size=(len(W), k))
     for _ in range(max_iter):

@@ -11,8 +11,6 @@ from sklearn.metrics import silhouette_score, adjusted_rand_score
 
 import symnmf
 
-np.random.seed(1234)
-
 EPSILON = 1e-4
 MAX_ITER = 300
 

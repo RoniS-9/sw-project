@@ -11,7 +11,7 @@
 #define MAX_ITER 300      /* maximum number of H update iterations */
 #define EPSILON 1e-4      /* convergence threshold on ||H(t+1)-H(t)||_F^2 */
 #define BETA 0.5          /* update step parameter */
-#define DENOM_EPS 1e-6    /* avoids /0 (forum question) */
+#define DENOM_EPS 1e-12   /* avoids /0 (value suggested on the forum) */
 
 /* Allocates a zero-initialized rows x cols matrix. Returns NULL on failure. */
 double **alloc_matrix(int rows, int cols);
