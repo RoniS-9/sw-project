@@ -115,6 +115,7 @@ def main():
         km_score = silhouette_score(X, km_labels)
         ari = adjusted_rand_score(nmf_labels, km_labels)
     except Exception:
+        # e.g. silhouette_score raises when a clustering has a single label
         symnmf.fail()
     print("nmf: %.4f" % nmf_score)
     print("kmeans: %.4f" % km_score)
